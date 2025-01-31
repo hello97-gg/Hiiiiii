@@ -11,7 +11,8 @@ app.get("/scrape", async (req, res) => {
 
   try {
     const browser = await puppeteer.launch({
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      executablePath: "/usr/bin/google-chrome", // Use pre-installed Chromium
+      args: ["--no-sandbox", "--disable-setuid-sandbox"], // Required for Render environment
     });
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: "networkidle2" });
