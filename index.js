@@ -1,5 +1,6 @@
 const express = require("express");
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-core");
+const chromium = require("@sparticuz/chromium");
 const cors = require("cors");
 
 const app = express();
@@ -11,12 +12,13 @@ app.get("/scrape", async (req, res) => {
 
   try {
     const browser = await puppeteer.launch({
-      executablePath: "/usr/bin/google-chrome", // Use pre-installed Chromium
-      args: ["--no-sandbox", "--disable-setuid-sandbox"], // Required for Render environment
+      args: [...chromium.args, "--no-sandbox", "--disable-setuid-sandbox"],
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
     });
+    
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: "networkidle2" });
-
     const content = await page.content();
     await browser.close();
 
