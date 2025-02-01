@@ -12,11 +12,16 @@ app.get("/scrape", async (req, res) => {
 
   try {
     const browser = await puppeteer.launch({
-      args: [...chromium.args, "--no-sandbox", "--disable-setuid-sandbox"],
+      args: [
+        ...chromium.args,
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+      ],
       executablePath: await chromium.executablePath(),
       headless: chromium.headless,
     });
-    
+
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: "networkidle2" });
     const content = await page.content();
@@ -24,7 +29,7 @@ app.get("/scrape", async (req, res) => {
 
     res.send(content);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: `Failed to scrape the URL: ${error.message}` });
   }
 });
 
